@@ -1,0 +1,113 @@
+/*-----     -----     BASIC RESET STYLES     -----     ----- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html {
+    scroll-behavior: smooth;
+}
+
+/*-----      -----     ICONS IMPORT -----      ----- */
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/*----- ICON SIZE UTILITY CLASSES -----*/
+.FS_ICON_XS   { font-size: 0.875rem;  } /* ~14px, -> FS_BODY_SMALL */
+.FS_ICON_SM   { font-size: 1rem;      } /* ~16px, -> FS_BODY_MEDIUM */
+.FS_ICON_MD   { font-size: 1.125rem;  } /* ~18px, -> FS_BODY_REGULAR */
+.FS_ICON_LG   { font-size: 1.5rem;    } /* ~24px, -> FS_SUBTITLE */
+.FS_ICON_XL   { font-size: 1.75rem;   } /* ~28px, -> FS_SECTION */
+.FS_ICON_2XL  { font-size: 2.5rem;    } /* ~40px, -> FS_HEADING_LG */
+.FS_ICON_3XL  { font-size: 3rem;      } /* ~48px, -> FS_HEADING_MD */
+.FS_ICON_4XL  { font-size: 4rem;      } /* ~64px, -> FS_HEADING_XL */
+
+
+/*-----      -----     FONT IMPORT -----      ----- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/*-----     -----     FONT UTILITY CLASSES     -----     ----- */
+
+/* Font Family */
+.FONT_POPPINS { font-family: 'Poppins', sans-serif; }
+
+/* Font Weights */
+.FW_THIN        { font-weight: 100; }
+.FW_EXTRA_LIGHT { font-weight: 200; }
+.FW_LIGHT       { font-weight: 300; }
+.FW_REGULAR     { font-weight: 400; }
+.FW_MEDIUM      { font-weight: 500; }
+.FW_SEMI_BOLD   { font-weight: 600; }
+.FW_BOLD        { font-weight: 700; }
+.FW_EXTRA_BOLD  { font-weight: 800; }
+.FW_BLACK       { font-weight: 900; }
+
+/* Font Sizes */
+.FS_BODY_SMALL   { font-size: 0.875rem; line-height: 1.4; } /* ~14px */
+.FS_BODY_MEDIUM  { font-size: 1rem;     line-height: 1.5; } /* ~16px */
+.FS_BODY_REGULAR { font-size: 1.125rem; line-height: 1.6; } /* ~18px */
+.FS_SUBTITLE     { font-size: 1.5rem;   line-height: 1.6; } /* ~24px */
+.FS_SECTION      { font-size: 1.75rem;  line-height: 1.75;} /* ~28px */
+.FS_HEADING_LG   { font-size: 2.5rem;   line-height: 1.8; } /* ~40px */
+.FS_HEADING_MD   { font-size: 3rem;     line-height: 1.8; } /* ~48px */
+.FS_HEADING_XL   { font-size: 4rem;     line-height: 1.8; } /* ~64px */
+
+
+/* Letter Spacing */
+.LS_NORMAL { letter-spacing: 0; }
+.LS_WIDE   { letter-spacing: 0.05em; }
+
+/* Line-height utilities */
+.LH_TIGHT  { line-height: 1.2; }
+.LH_NORMAL { line-height: 1.5; }
+.LH_LOOSE  { line-height: 1.8; }
+
+/*-----     -----     COLOR UTILITY CLASSES     -----     ----- */
+
+/* Text Colors */
+.TEXT_WHITE_100 { color: #ffffff; }
+.TEXT_WHITE_60  { color: rgba(255, 255, 255, 0.6); }
+.TEXT_WHITE_30  { color: rgba(255, 255, 255, 0.3); }
+
+.TEXT_BLACK_100 { color: #000000; }
+.TEXT_BLACK_60  { color: rgba(0, 0, 0, 0.6); }
+.TEXT_BLACK_30  { color: rgba(0, 0, 0, 0.3); }
+
+.TEXT_BLUE_1   { color: rgba(15, 60, 120, 1); }
+.TEXT_BLUE_2   { color: rgba(15, 60, 120, 0.75); }
+.TEXT_BLUE_3   { color: rgba(15, 60, 120, 0.5); }
+.TEXT_BLUE_4   { color: rgba(15, 60, 120, 0.25); }
+
+
+
+/* Background Colors */
+.BG_WHITE_100 { background-color: #ffffff; }
+.BG_WHITE_60  { background-color: rgba(255, 255, 255, 0.6); }
+.BG_WHITE_30  { background-color: rgba(255, 255, 255, 0.3); }
+
+.BG_BLACK_100 { background-color: #000000; }
+.BG_BLACK_60  { background-color: rgba(0, 0, 0, 0.6); }
+.BG_BLACK_30  { background-color: rgba(0, 0, 0, 0.3); }
+
+.BG_BLUE_1   { background-color: rgba(15, 60, 120, 1); }
+.BG_BLUE_2   { background-color: rgba(15, 60, 120, 0.75); }
+.BG_BLUE_3   { background-color: rgba(15, 60, 120, 0.5); }
+.BG_BLUE_4   { background-color: rgba(15, 60, 120, 0.25); }
+
+/*-----     -----     SPACING UTILITY CLASSES     -----     ----- */
+.P_XS { padding: 0.25rem; }
+.P_SM { padding: 0.5rem; }
+.P_MD { padding: 1rem; }
+.P_LG { padding: 1.5rem; }
+.P_XL { padding: 2rem; }
+
+.M_XS { margin: 0.25rem; }
+.M_SM { margin: 0.5rem; }
+.M_MD { margin: 1rem; }
+.M_LG { margin: 1.5rem; }
+.M_XL { margin: 2rem; }
+
+/*-----     -----     BORDER & RADIUS     -----     ----- */
+.RD_SM  { border-radius: 0.25rem; }
+.RD_MD  { border-radius: 0.5rem; }
+.RD_LG  { border-radius: 1rem; }
+.RD_FULL { border-radius: 9999px; }
