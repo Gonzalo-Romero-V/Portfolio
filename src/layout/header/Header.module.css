@@ -1,0 +1,63 @@
+/* ----- BASE STYLES ----- */
+
+.headerContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 5rem 10rem;
+    align-items: end;
+    transition: background-color 0.4s ease;
+    background: transparent;
+    position: relative;
+    
+}
+
+.navBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+}
+
+.menuButtons {
+    display: flex;
+    gap: 5rem;
+    width: max-content;
+}
+
+.controlButtons {
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+}
+
+.navItem {
+    text-decoration: none;
+    transition: all 0.4s ease;
+}
+
+.navItem:hover {
+    transform: translateY(-3px);
+    font-weight: 700;
+}
+
+/* ----- DARK THEME ----- */
+/* .headerContainer.dark {
+    background-color: rgba(0, 0, 0, 1);
+} */
+
+.navItem.dark:hover {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8),
+                0 0 16px rgba(255, 255, 255, 0.6);
+
+}
+/* ----- DARK THEME ----- */
+/* .headerContainer.light {
+    background-color: rgba(255, 255, 255, 1);
+}
+ */
+
+.navItem.light:hover {
+    text-shadow: 0 0 8px rgba(123, 180, 255, 0.842);
+
+}
