@@ -1,3 +1,27 @@
 .homeContainer{
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainContent{
+    padding: 0 20rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12rem;
+    padding-top: 4rem;
+} 
+
+.leftSection {
+    flex: 0 0 35%; /* 35% del ancho */
+}
+
+.rightSection {
+    flex: 0 0 65%; /* 65% del ancho */
+}
+
+.tittle, .paragraph {
+    transition: color 0.4s ease;
 }

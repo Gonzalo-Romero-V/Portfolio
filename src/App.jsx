@@ -1,7 +1,7 @@
 import styles from './App.module.css';
 import Home from './pages/home/Home';
 import { ThemeProvider, useTheme } from './context/themeContext';
-import GeneralBackground from './components/global/GeneralBackground';
+import GeneralBackground from './components/global/generalBackground/GeneralBackground';
 
 function AppContent() {
   const { darkMode } = useTheme();

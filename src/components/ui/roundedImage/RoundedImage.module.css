@@ -1,0 +1,83 @@
+/* ...existing code... */
+
+/* Wrapper around the image (matches JSX .imageContainer) */
+.imageContainer {
+  width: 96px;
+  height: 96px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: var(--ri-bg, #f3f4f6);
+  border: 2px solid var(--ri-border, rgba(0,0,0,0.06));
+  box-shadow: 0 6px 18px rgba(12,14,20,0.06);
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+/* The image element (matches JSX .roundedImage) */
+.roundedImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* Size modifiers (if used from JSX) */
+.small {
+  width: 56px;
+  height: 56px;
+}
+
+.large {
+  width: 260px;
+  height: 260px;
+}
+
+/* Placeholder (if you render initials instead of <img>) */
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ri-fg, #0f3c78);
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(0,0,0,0.02));
+}
+
+/* Hover / focus interaction on the container */
+.imageContainer:hover,
+.imageContainer:focus {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(12,14,20,0.12);
+  cursor: pointer;
+}
+
+/* Theme variants - these are applied to the <img> in JSX via styles.dark / styles.light */
+.dark {
+  --ri-bg: rgba(255,255,255,0.04);
+  --ri-border: rgba(255,255,255,0.08);
+  --ri-fg: #ffffff;
+  filter: none; /* keep as-is or add subtle effects for dark mode */
+}
+
+.light {
+  --ri-bg: #ffffff;
+  --ri-border: rgba(15,60,120,0.08);
+  --ri-fg: #0f3c78;
+  filter: none;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .imageContainer,
+  .roundedImage {
+    transition: none !important;
+  }
+}

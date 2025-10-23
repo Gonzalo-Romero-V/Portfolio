@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './GeneralBackground.module.css';
-import lightBg from '../../assets/images/lightBg.png';
-import darkBg from '../../assets/images/darkBg.png';
+import lightBg from '../../../assets/images/lightBg.png';
+import darkBg from '../../../assets/images/darkBg.png';
 
 const GeneralBackground = ({ darkMode }) => {
   return (

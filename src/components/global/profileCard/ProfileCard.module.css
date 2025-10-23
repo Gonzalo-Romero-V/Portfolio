@@ -1,0 +1,74 @@
+/* ----- BASE STYLES ----- */
+
+.profileCard {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.4s ease;
+}
+
+
+.name {
+    line-height: 1;
+    transition: all 0.4s ease;
+    white-space: nowrap; 
+    margin-top: 2rem;
+    padding-right: 20px;
+}
+
+.title {
+    transition: all 1s ease;
+    white-space: nowrap; 
+    padding-right: 20px;
+
+}
+
+
+
+
+.socials{   
+    display: flex;
+    margin-top: 0.2rem;
+    gap: 0.5rem;
+    padding-right: 22px;
+
+}
+
+
+.socials a {
+    display: inline-flex;
+    transition: all 0.4s ease;
+}
+
+.socials a:hover {
+    transform: translateY(-3px);
+}
+
+.socials a i {
+    transition: all 0.4s ease;
+}
+
+/* ----- DARK THEME ----- */
+
+
+.socials a:hover {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8),
+                0 0 12px rgba(255, 255, 255, 0.6),
+                0 0 16px rgba(255, 255, 255, 0.3);
+}
+
+.socials a i.dark:hover {
+    color: rgb(255, 255, 255);
+}
+    /* ----- DARK THEME ----- */
+
+.socials a:hover {
+    
+    text-shadow: 0 0 8px rgba(123, 180, 255, 0.842);
+}
+
+.socials a i.light:hover {
+    color: rgba(15, 60, 120, 1);
+}
