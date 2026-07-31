@@ -3,6 +3,10 @@
    Every variable name used here is declared once as a contract in
    globals.css. Don't invent new names here: add the name to globals.css's
    @theme block first, then set its value in this file.
+
+   Single source of truth: this is the one design (ported from the Claude
+   Design import, turn 2 / option 2a). No parallel brand/theme lives
+   alongside it anymore.
    ========================================================================== */
 
 @theme {
@@ -10,136 +14,191 @@
      Swapping typeface: change these + the matching next/font call in
      app/layout.tsx. --font-display defaults to the body face; point it
      at a second next/font variable if the project wants a distinct one. */
-  --font-body: var(--font-geist-sans);
-  --font-code: var(--font-geist-mono);
-  --font-display: var(--font-body);
+  --font-body: var(--font-space-grotesk);
+  --font-code: var(--font-jetbrains-mono);
+  --font-display: var(--font-archivo);
 
   /* Typographic scale: sizes/weights/line-heights are brand voice, not
      mechanism. The --text-<role> naming + paired suffixes is what
      globals.css's font-sans/mono contract expects Tailwind to resolve. */
-  --text-h1: 2.25rem; /* 36px */
-  --text-h1--font-weight: 800;
-  --text-h1--line-height: 1.2;
-  --text-h1--letter-spacing: -0.01em;
+  --text-h1: 4.125rem; /* 66px, hero display headline */
+  --text-h1--font-weight: 200;
+  --text-h1--line-height: 1.02;
+  --text-h1--letter-spacing: -0.045em;
 
+  --text-h2: 2.25rem; /* 36px, name lockup */
+  --text-h2--font-weight: 800;
+  --text-h2--line-height: 1;
+  --text-h2--letter-spacing: -0.03em;
 
-  --text-h2: 1.75rem; /* 28px */
-  --text-h2--font-weight: 700;
-  --text-h2--line-height: 1.3;
-  --text-h2--letter-spacing: -0.005em;
-
-  --text-h3: 1.375rem; /* 22px */
+  --text-h3: 1.375rem;
   --text-h3--font-weight: 600;
-  --text-h3--line-height: 1.4;
+  --text-h3--line-height: 1.3;
 
-  --text-h4: 1.125rem; /* 18px */
-  --text-h4--font-weight: 600;
-  --text-h4--line-height: 1.4;
+  --text-h4: 1.125rem;
+  --text-h4--font-weight: 500;
+  --text-h4--line-height: 1.3;
 
-  --text-body: 1rem; /* 16px */
-  --text-body--font-weight: 400;
-  --text-body--line-height: 1.6;
+  /* Mono eyebrow / tagline label — the light companion next to the bold
+     display headings above. */
+  --text-subtitle: 0.6875rem; /* 11px */
+  --text-subtitle--font-weight: 500;
+  --text-subtitle--line-height: 1.3;
+  --text-subtitle--letter-spacing: 0.22em;
 
-  --text-small: 0.875rem; /* 14px */
+  --text-body: 0.97rem; /* ~15.5px */
+  --text-body--font-weight: 300;
+  --text-body--line-height: 1.75;
+
+  --text-small: 0.875rem;
   --text-small--font-weight: 500;
   --text-small--line-height: 1.5;
 
-  --text-xs: 0.75rem; /* 12px */
+  --text-xs: 0.75rem;
   --text-xs--font-weight: 400;
   --text-xs--line-height: 1.4;
+}
+
+/* Brand hue system — declared once, theme-agnostic: --primary-h/-s/-l are
+   the ONE thing to turn to rotate the site's whole warm palette together,
+   like spinning the hue wheel in an image editor. Every other warm token
+   (the gradient partner, accent, warning, the focus ring, ::selection, and
+   the emblem's big circle) is calc()'d from these three numbers, never a
+   second hardcoded color. Neither :root nor .dark repeats these — the
+   brand color doesn't change with light/dark, only the neutral surface
+   tokens below do. The Site-theme panel in the emblem tuner edits exactly
+   these three. */
+:root {
+  --primary-h: 8;
+  --primary-s: 100%;
+  --primary-l: 56%;
+  --primary: hsl(var(--primary-h) var(--primary-s) var(--primary-l));
+  --primary-foreground: #0b0605;
+
+  --primary-2-h: calc(var(--primary-h) - 6);
+  --primary-2-s: calc(var(--primary-s) - 28%);
+  --primary-2-l: calc(var(--primary-l) - 11%);
+  --primary-2: hsl(var(--primary-2-h) var(--primary-2-s) var(--primary-2-l));
+
+  --accent-h: calc(var(--primary-h) + 8);
+  --accent-s: var(--primary-s);
+  --accent-l: calc(var(--primary-l) + 4%);
+  --accent: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+  --accent-foreground: #0b0605;
+
+  --warning-h: calc(var(--primary-h) + 28);
+  --warning-s: var(--primary-s);
+  --warning-l: var(--primary-l);
+  --warning: hsl(var(--warning-h) var(--warning-s) var(--warning-l));
+  --warning-foreground: #2a1400;
+
+  --ring: hsl(var(--primary-h) var(--primary-s) var(--primary-l) / 0.5);
+
+  /* Site chrome: how translucent/blurred Header and Footer's glass is.
+     Same idea as the brand hue above — one shared, theme-agnostic pair
+     instead of each component hardcoding its own opacity/blur. Higher
+     opacity + more blur = more of a solid panel; lower = more see-through. */
+  --chrome-opacity: 44%;
+  --chrome-blur: 0px;
+
+  /* Ambient mesh background (components/layout/site-background.tsx): the
+     motion itself is procedural JS (summed sine drift + cursor parallax),
+     read from these each frame — not CSS keyframes, so there's nothing to
+     restart on navigation and no fixed loop length. */
+  --mesh-opacity: 0.7;
+  --mesh-blur-scale: 0.52;
+  --mesh-speed: 2.5;
+  --mesh-amount: 2.85;
+  --mesh-cursor: 0;
+
+  /* Mesh's secondary (darker/inner) stop — this is the original
+     hardcoded-per-blob relationship (hue -11/-15 off primary, 80%/81%
+     saturation, 35%/31% lightness), extracted into one shared, GUI-editable
+     tone instead of two literals baked into site-background.tsx. Only hue
+     was ever anchored to primary; saturation/lightness are deliberately
+     FIXED here, same as before — that's why zeroing --primary-s still
+     leaves a colored halo, and that's correct, not a bug (confirmed:
+     don't auto-link these to --primary-s/-l). The Site background panel's
+     "anchored" checkbox reproduces exactly this; unchecking it only unlocks
+     manual h/s/l editing for experimentation, it doesn't change this default. */
+  --mesh-2-h: calc(var(--primary-h) - 13);
+  --mesh-2-s: 80%;
+  --mesh-2-l: 33%;
 }
 
 :root {
   --radius: 0.625rem;
 
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Light theme — the inverse of .dark below, same token names/roles,
+     values flipped for a white background instead of designed-around-black. */
+  --background: #fdf8f6;
+  --foreground: #1a1210;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card: rgba(20, 10, 5, 0.035);
+  --card-foreground: #1a1210;
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover: #ffffff;
+  --popover-foreground: #1a1210;
 
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --secondary: rgba(20, 10, 5, 0.05);
+  --secondary-foreground: #1a1210;
 
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --muted: rgba(20, 10, 5, 0.05);
+  --muted-foreground: rgba(26, 18, 16, 0.6);
 
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --destructive: oklch(0.55 0.2 25);
 
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --success: oklch(0.5 0.15 145);
+  --success-foreground: oklch(0.98 0.02 145);
 
-  --destructive: oklch(0.577 0.245 27.325);
+  --info: oklch(0.5 0.14 235);
+  --info-foreground: oklch(0.98 0.02 235);
 
-  --success: oklch(0.6 0.15 145);
-  --success-foreground: oklch(0.985 0 0);
+  --border: rgba(20, 10, 5, 0.1);
+  --input: rgba(20, 10, 5, 0.12);
 
-  --warning: oklch(0.75 0.16 80);
-  --warning-foreground: oklch(0.2 0.02 80);
+  --chart-1: oklch(0.35 0 0);
+  --chart-2: oklch(0.5 0 0);
+  --chart-3: oklch(0.6 0 0);
+  --chart-4: oklch(0.72 0 0);
+  --chart-5: oklch(0.85 0 0);
 
-  --info: oklch(0.6 0.14 235);
-  --info-foreground: oklch(0.985 0 0);
-
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1210;
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: #0b0605;
+  --sidebar-accent: rgba(20, 10, 5, 0.05);
+  --sidebar-accent-foreground: #1a1210;
+  --sidebar-border: rgba(20, 10, 5, 0.1);
+  --sidebar-ring: var(--ring);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  --background: #050303;
+  --foreground: #f5efec;
 
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
+  --card: rgba(255, 255, 255, 0.035);
+  --card-foreground: #f5efec;
 
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --popover: #0b0605;
+  --popover-foreground: #f5efec;
 
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --secondary: rgba(255, 255, 255, 0.05);
+  --secondary-foreground: #f5efec;
 
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: rgba(245, 239, 236, 0.55);
 
   --destructive: oklch(0.704 0.191 22.216);
 
   --success: oklch(0.72 0.15 145);
   --success-foreground: oklch(0.18 0.02 145);
 
-  --warning: oklch(0.8 0.15 80);
-  --warning-foreground: oklch(0.18 0.02 80);
-
   --info: oklch(0.72 0.14 235);
   --info-foreground: oklch(0.18 0.02 235);
 
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.12);
 
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -147,12 +206,17 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
 
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: #0b0605;
+  --sidebar-foreground: #f5efec;
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: #0b0605;
+  --sidebar-accent: rgba(255, 255, 255, 0.05);
+  --sidebar-accent-foreground: #f5efec;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: var(--ring);
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
