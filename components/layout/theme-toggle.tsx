@@ -39,11 +39,21 @@ export function ThemeToggle() {
 
   function toggle() {
     const next = !dark;
-    document.documentElement.classList.toggle("dark", next);
-    try {
-      localStorage.setItem("theme", next ? "dark" : "light");
-    } catch {
-      // Storage disabled/full — the toggle still works for this visit.
+    function apply() {
+      document.documentElement.classList.toggle("dark", next);
+      try {
+        localStorage.setItem("theme", next ? "dark" : "light");
+      } catch {
+        // Storage disabled/full — the toggle still works for this visit.
+      }
+    }
+    // Crossfades the whole page between themes instead of an instant snap —
+    // the ::view-transition-old/new(root) timing lives in globals.css.
+    // Falls back to an instant swap on browsers without the API (Firefox).
+    if (typeof document.startViewTransition === "function") {
+      document.startViewTransition(apply);
+    } else {
+      apply();
     }
   }
 
