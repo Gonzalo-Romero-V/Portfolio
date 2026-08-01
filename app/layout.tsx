@@ -3,6 +3,7 @@ import { Archivo, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { SiteBackground } from "@/components/layout/site-background";
+import { LocaleProvider } from "@/components/layout/locale-provider";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -24,7 +25,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gonzalo Romero — Portfolio",
+  title: "Portfolio de Gonzalo Romero",
   description: "Portfolio personal de Gonzalo Romero.",
 };
 
@@ -42,18 +43,22 @@ export default function RootLayout({
       <head>
         {/* Runs synchronously before paint to avoid a light->dark flash.
             suppressHydrationWarning on <html> is required because this
-            mutates the class before React hydrates. */}
+            mutates the class before React hydrates. Default is dark
+            (ignores system preference) unless the visitor has explicitly
+            picked light via the toggle, which persists to localStorage. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem("theme");if(t!=="light")document.documentElement.classList.add("dark")}catch(e){}})()`,
           }}
         />
       </head>
       <body className="min-h-full flex flex-col">
         <SiteBackground />
-        <Header />
-        {children}
-        <Footer />
+        <LocaleProvider>
+          <Header />
+          {children}
+          <Footer />
+        </LocaleProvider>
       </body>
     </html>
   );
