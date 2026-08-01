@@ -1,17 +1,14 @@
-"use client";
-
-import { useState } from "react";
 import { generateBlobPath } from "@/components/home/blob-path";
 import { hsla } from "@/components/home/color";
 import { canvasInset, toCanvasPosition, toCanvasSize } from "@/components/home/canvas-space";
-import { readCssVarNumber } from "@/components/home/css-var";
 import { defaultEmblemState } from "@/components/home/emblem-state";
-import type { CircleLayer as CircleLayerConfig, PrimaryHsl, RimParams } from "@/components/home/emblem-state";
-import { EmblemTuner } from "@/components/home/emblem-tuner";
+import type { CircleLayer as CircleLayerConfig, RimParams } from "@/components/home/emblem-state";
 import { SocialLinks } from "@/components/home/social-links";
 
-function fillGradient(hue: number, saturation: number, alpha: number) {
-  return `radial-gradient(circle at 34% 30%, ${hsla(hue, saturation, 60, 0.72 * alpha)}, ${hsla(hue, saturation, 45, 0.52 * alpha)} 30%, ${hsla(hue, saturation, 33, 0.4 * alpha)} 52%, ${hsla(hue, saturation, 15, 0.3 * alpha)} 74%, ${hsla(hue, saturation, 6, 0.18 * alpha)} 92%)`;
+type ColorAt = (lightness: number, alpha: number) => string;
+
+function fillGradient(colorAt: ColorAt, alpha: number) {
+  return `radial-gradient(circle at 34% 30%, ${colorAt(60, 0.72 * alpha)}, ${colorAt(45, 0.52 * alpha)} 30%, ${colorAt(33, 0.4 * alpha)} 52%, ${colorAt(15, 0.3 * alpha)} 74%, ${colorAt(6, 0.18 * alpha)} 92%)`;
 }
 
 function RimStroke({ path, color, rim }: { path: string; color: string; rim: RimParams }) {
@@ -42,23 +39,23 @@ function RimStroke({ path, color, rim }: { path: string; color: string; rim: Rim
 
 /** One self-contained circle: position/size, internal fill, external glow,
     glass backdrop and rim — every circle in the emblem is exactly one of
-    these, configured differently. Color is passed in separately (hue/
-    saturation) rather than living on `layer`, so the caller can point the
-    big circle at the site's --primary hue while the small one keeps its
-    own independent color — glow/backdrop/rim intensity stay per-component
-    either way, regardless of where the color comes from. Lives in
-    canvas-space (see canvas-space.ts) so it has room to pan/grow without
-    hitting the frame. */
+    these, configured differently. Color is passed in as a `colorAt(lightness,
+    alpha)` function rather than living on `layer`, so the caller can point
+    the big circle at the site's --primary-h/-s (as a literal CSS var()
+    reference, resolved by the browser — no JS/React state, so there's
+    nothing to mismatch between server and client, and no post-mount flash)
+    while the small one keeps its own independent numeric color —
+    glow/backdrop/rim intensity stay per-component either way, regardless of
+    where the color comes from. Lives in canvas-space (see canvas-space.ts)
+    so it has room to pan/grow without hitting the frame. */
 function CircleLayer({
   layer,
-  hue,
-  saturation,
+  colorAt,
   canvasScale,
   clipId,
 }: {
   layer: CircleLayerConfig;
-  hue: number;
-  saturation: number;
+  colorAt: ColorAt;
   canvasScale: number;
   clipId: string;
 }) {
@@ -90,7 +87,7 @@ function CircleLayer({
         <svg viewBox="0 0 1 1" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 overflow-visible">
           <path
             d={glowPath}
-            fill={hsla(hue, saturation, 60, layer.glow.opacity)}
+            fill={colorAt(60, layer.glow.opacity)}
             style={{ filter: `blur(${layer.glow.blur}px)` }}
           />
         </svg>
@@ -103,7 +100,7 @@ function CircleLayer({
         className="absolute inset-0"
         style={{
           clipPath: `url(#${clipId})`,
-          background: fillGradient(hue, saturation, layer.fillAlpha),
+          background: fillGradient(colorAt, layer.fillAlpha),
           backdropFilter: hasBackdrop ? `blur(${layer.backdrop.blur}px) saturate(${layer.backdrop.saturate}%)` : undefined,
           WebkitBackdropFilter: hasBackdrop ? `blur(${layer.backdrop.blur}px) saturate(${layer.backdrop.saturate}%)` : undefined,
         }}
@@ -111,45 +108,20 @@ function CircleLayer({
 
       {/* Rim / edge. */}
       <svg viewBox="0 0 1 1" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 overflow-visible">
-        <RimStroke path={path} color={hsla(hue, saturation, 75, 1)} rim={layer.rim} />
+        <RimStroke path={path} color={colorAt(75, 1)} rim={layer.rim} />
       </svg>
     </div>
   );
 }
 
+// The tuner used to live-preview EmblemState/primary/chrome/mesh here; all
+// four have since been frozen into their real defaults (theme.css and
+// defaultEmblemState below), so this is no longer stateful — the emblem is
+// static config rendered straight from those defaults. Re-add
+// `useState(defaultEmblemState)` + `<EmblemTuner />` (still in
+// components/home/emblem-tuner.tsx) if another tuning pass is needed.
 export function ProfileEmblem() {
-  const [state, setState] = useState(defaultEmblemState);
-
-  // The big circle inherits its color from the site's --primary-h/-s
-  // instead of carrying its own independent hue/saturation — read once on
-  // mount (client only) and kept in sync with the Site-theme sliders below,
-  // which update both this state (so the big circle repaints) and the CSS
-  // variables (so the rest of the page — header, CTA, stat cards —
-  // repaints too). Glow/backdrop/rim intensity stay in EmblemState,
-  // independent of this.
-  const [primary, setPrimaryState] = useState<PrimaryHsl>(() => ({
-    h: readCssVarNumber("--primary-h", 8),
-    s: readCssVarNumber("--primary-s", 100),
-    l: readCssVarNumber("--primary-l", 56),
-  }));
-
-  function setPrimary(next: PrimaryHsl) {
-    setPrimaryState(next);
-    document.documentElement.style.setProperty("--primary-h", `${next.h}`);
-    document.documentElement.style.setProperty("--primary-s", `${next.s}%`);
-    document.documentElement.style.setProperty("--primary-l", `${next.l}%`);
-  }
-
-  function resetPrimary() {
-    document.documentElement.style.removeProperty("--primary-h");
-    document.documentElement.style.removeProperty("--primary-s");
-    document.documentElement.style.removeProperty("--primary-l");
-    setPrimaryState({
-      h: readCssVarNumber("--primary-h", 8),
-      s: readCssVarNumber("--primary-s", 100),
-      l: readCssVarNumber("--primary-l", 56),
-    });
-  }
+  const state = defaultEmblemState;
 
   // The photo is deliberately NOT part of either CircleLayer's canvas-space
   // wrapper: it's a single plain <img>, positioned/sized by hand
@@ -163,11 +135,13 @@ export function ProfileEmblem() {
 
   return (
     <div className="relative aspect-square w-full max-w-sm sm:max-w-md">
-      {/* Layer 1: big circle — color inherited from the site's primary hue. */}
+      {/* Layer 1: big circle — color inherited from the site's primary hue
+          via a literal var(--primary-h)/var(--primary-s) reference (see
+          CircleLayer's colorAt), so it's always in sync with the current
+          theme from the very first paint, dark or light. */}
       <CircleLayer
         layer={state.big}
-        hue={primary.h}
-        saturation={primary.s}
+        colorAt={(l, a) => `hsl(var(--primary-h) var(--primary-s) ${l}% / ${a})`}
         canvasScale={state.canvasScale}
         clipId="emblem-visual-big"
       />
@@ -175,8 +149,7 @@ export function ProfileEmblem() {
       {/* Layer 2: small circle, on top of layer 1 — keeps its own independent color. */}
       <CircleLayer
         layer={state.small}
-        hue={state.small.hue}
-        saturation={state.small.saturation}
+        colorAt={(l, a) => hsla(state.small.hue, state.small.saturation, l, a)}
         canvasScale={state.canvasScale}
         clipId="emblem-visual-small"
       />
@@ -201,7 +174,7 @@ export function ProfileEmblem() {
               {/* eslint-disable-next-line @next/next/no-img-element -- plain
                   img on purpose: no object-fit, no cropping, just x/y/size. */}
               <img
-                src="/pictures/profile-picture.png"
+                src="/pictures/profile-picture2.jpeg"
                 alt="Gonzalo Romero"
                 style={{
                   position: "absolute",
@@ -236,15 +209,13 @@ export function ProfileEmblem() {
           Gonzalo Romero
         </p>
         <p
-          className="font-mono text-accent uppercase"
+          className="font-mono text-white uppercase dark:text-accent"
           style={{ fontSize: state.text.taglineSize, marginTop: state.text.gap, letterSpacing: "0.22em" }}
         >
           Software Developer
         </p>
         <SocialLinks config={state.social} />
       </div>
-
-      <EmblemTuner state={state} onChange={setState} primary={primary} onPrimaryChange={setPrimary} onPrimaryReset={resetPrimary} />
     </div>
   );
 }

@@ -1,9 +1,16 @@
-import { ArrowRight, Download, BriefcaseBusiness, LayoutGrid, Cpu, Flame } from "lucide-react";
+"use client";
+
+import { ArrowRight, MessageCircle, BriefcaseBusiness, LayoutGrid, Cpu, Sparkles } from "lucide-react";
 import { Container } from "@/components/layout/container";
+import { SectionEyebrow } from "@/components/layout/section-eyebrow";
+import { useLocale } from "@/components/layout/locale-provider";
 import { ProfileEmblem } from "@/components/home/profile-emblem";
 import { StatCard } from "@/components/home/stat-card";
 
 export default function Home() {
+  const { t } = useLocale();
+  const home = t.home;
+
   return (
     <main className="relative flex flex-1 flex-col text-foreground">
       <Container>
@@ -11,46 +18,40 @@ export default function Home() {
           <ProfileEmblem />
 
           <div className="flex max-w-[540px] flex-col">
-            <div className="flex items-center gap-3 font-mono text-[10.5px] tracking-[.24em] uppercase">
-              <span className="text-primary">01</span>
-              <span className="text-accent">Presentación</span>
-              <span className="h-px w-9 bg-border" />
-              <span className="text-muted-foreground/70">Ecuador</span>
-            </div>
+            <SectionEyebrow index="01" label={home.eyebrow} trailing={home.location} />
 
             <h1 className="mt-6 font-heading text-h1 text-balance">
-              Desarrollo soluciones que generan{" "}
+              {home.heroTitlePrefix}{" "}
               <span className="font-black text-primary [text-shadow:0_0_52px_hsl(var(--primary-h)_var(--primary-s)_var(--primary-l)_/_.55)]">
-                impacto
+                {home.heroTitleHighlight}
               </span>
               .
             </h1>
 
             <p className="mt-7 max-w-[470px] text-body text-pretty text-muted-foreground">
-              Construyo aplicaciones web modernas con Next.js, Laravel y
-              Postgres. Me interesa lo que pasa debajo de la interfaz:
-              rendimiento, arquitectura limpia y decisiones que aguantan el
-              crecimiento del producto.
+              {home.heroParagraph}
             </p>
 
-            <div className="mt-9 flex gap-3.5">
+            <div className="mt-9 flex flex-wrap gap-3.5">
               <a
-                href="#"
+                href="https://wa.me/593989519635"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 rounded-[14px] bg-[linear-gradient(135deg,var(--primary),var(--primary-2))] px-[26px] py-[15px] text-[13.5px] font-semibold text-primary-foreground shadow-[0_14px_42px_hsl(var(--primary-2-h)_var(--primary-2-s)_var(--primary-2-l)_/_.44),inset_0_1px_0_rgba(255,255,255,.28)]"
               >
-                Ver proyectos <ArrowRight className="size-[15px]" />
+                {home.ctaWhatsapp} <MessageCircle className="size-[15px]" />
               </a>
               <a
-                href="#"
+                href="/portfolio"
                 className="inline-flex items-center gap-2.5 rounded-[14px] border border-border bg-card px-[26px] py-[15px] text-[13.5px] font-medium text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-[18px]"
               >
-                Descargar CV{" "}
-                <Download className="size-[15px] text-muted-foreground" />
+                {home.ctaProjects}{" "}
+                <ArrowRight className="size-[15px] text-muted-foreground" />
               </a>
             </div>
 
             <div
-              className="flex items-center gap-6 font-mono text-[10.5px] tracking-[.14em] text-muted-foreground/60 uppercase"
+              className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10.5px] tracking-[.14em] text-muted-foreground/60 uppercase"
               style={{ marginTop: "52px" }}
             >
               <span>Next.js</span>
@@ -69,27 +70,31 @@ export default function Home() {
             icon={BriefcaseBusiness}
             value={3}
             prefix="+"
-            label="Años de experiencia"
+            label={home.stats.years}
           />
           <StatCard
             icon={LayoutGrid}
             value={15}
             prefix="+"
-            label="Proyectos completados"
+            label={home.stats.projects}
           />
           <StatCard
             icon={Cpu}
-            value={8}
+            value={6}
             prefix="+"
-            label="Tecnologías dominadas"
+            label={home.stats.tech}
           />
-          <StatCard
-            icon={Flame}
-            value={100}
-            suffix="%"
-            label="Comprometido"
-            highlight
-          />
+          <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-transparent p-6 shadow-[inset_0_1px_0_rgba(255,255,255,.14),0_24px_60px_rgba(0,0,0,.4)] backdrop-blur-2xl transition-all">
+            <span className="flex size-9 items-center justify-center rounded-[11px] border border-primary/40 bg-primary/20 text-warning">
+              <Sparkles className="size-[17px]" />
+            </span>
+            <div className="mt-6 font-heading text-[21px] leading-tight font-black tracking-tight text-primary [text-shadow:0_0_44px_hsl(var(--primary-h)_var(--primary-s)_var(--primary-l)_/_.5)]">
+              {home.stats.areasValue}
+            </div>
+            <div className="mt-2 font-mono text-[9.5px] tracking-[.16em] text-muted-foreground/80 uppercase">
+              {home.stats.areasLabel}
+            </div>
+          </div>
         </div>
       </Container>
     </main>

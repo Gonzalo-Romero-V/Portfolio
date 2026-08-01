@@ -18,10 +18,16 @@ function BrandIcon({ path, size }: { path: string; size: number }) {
   );
 }
 
+const brandLinks = {
+  github: "https://github.com/Gonzalo-Romero-V",
+  linkedin: "https://www.linkedin.com/in/gonzalo-romero-a50a902bb",
+  instagram: "https://instagram.com/gonzaloromero.me",
+} as const;
+
 export function SocialLinks({ config }: { config: SocialConfig }) {
   const buttonStyle = { width: config.buttonSize, height: config.buttonSize };
   const buttonClass =
-    "flex items-center justify-center rounded-full border border-border bg-card text-foreground/70 backdrop-blur-[10px] transition-all hover:-translate-y-0.5 hover:text-foreground";
+    "flex items-center justify-center rounded-full border border-white/50 bg-transparent text-white backdrop-blur-[10px] transition-all hover:-translate-y-0.5 hover:border-white dark:border-border dark:bg-card dark:text-foreground/70 dark:hover:text-foreground";
 
   return (
     <div
@@ -30,12 +36,25 @@ export function SocialLinks({ config }: { config: SocialConfig }) {
     >
       {(Object.keys(brandIconPaths) as (keyof typeof brandIconPaths)[]).map(
         (key) => (
-          <a key={key} href="#" aria-label={key} className={buttonClass} style={buttonStyle}>
+          <a
+            key={key}
+            href={brandLinks[key]}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={key}
+            className={buttonClass}
+            style={buttonStyle}
+          >
             <BrandIcon path={brandIconPaths[key]} size={config.iconSize} />
           </a>
         ),
       )}
-      <a href="#" aria-label="mail" className={buttonClass} style={buttonStyle}>
+      <a
+        href="mailto:hello.gonzaloromero@gmail.com"
+        aria-label="mail"
+        className={buttonClass}
+        style={buttonStyle}
+      >
         <Mail style={{ width: config.iconSize, height: config.iconSize }} />
       </a>
     </div>

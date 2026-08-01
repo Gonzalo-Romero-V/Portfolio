@@ -132,7 +132,7 @@ export const defaultEmblemState: EmblemState = {
     rim: { opacity: 0.22, width: 1, glow: 0 },
   },
   small: {
-    blob: { cx: 0.59, cy: 0.32, radius: 0.28, scale: 1, points: 8, irregularity: 0.29, seed: 42, rotation: 81 },
+    blob: { cx: 0.58, cy: 0.31, radius: 0.28, scale: 1, points: 8, irregularity: 0.29, seed: 42, rotation: 81 },
     hue: 0,
     saturation: 0,
     fillAlpha: 0.35,
@@ -142,7 +142,7 @@ export const defaultEmblemState: EmblemState = {
   },
 
   photoOpacity: 1,
-  image: { x: 55, y: 44, size: 58, visible: false },
+  image: { x: 58, y: 40, size: 54, visible: true },
   text: { x: 0.83, y: 0.64, width: 0.6, nameSize: 26, taglineSize: 9, gap: 2 },
   social: { buttonSize: 24, iconSize: 11, gap: 6, marginTop: 8 },
 };
