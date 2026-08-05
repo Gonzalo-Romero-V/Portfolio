@@ -29,7 +29,7 @@ const projects = [
   },
 ];
 
-export default function PortfolioPage() {
+export function PortfolioView() {
   const { t } = useLocale();
   const portfolio = t.portfolio;
 
@@ -64,7 +64,7 @@ export default function PortfolioPage() {
                 <ArrowUpRight className="size-[16px] text-muted-foreground/60 transition-all group-hover:text-foreground" />
               </div>
 
-              <h3 className="mt-5 font-heading text-h4">{name}</h3>
+              <h2 className="mt-5 font-heading text-h4">{name}</h2>
               <p className="mt-2 text-small font-normal text-muted-foreground">
                 {portfolio.projects[key]}
               </p>

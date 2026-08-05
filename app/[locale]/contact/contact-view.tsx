@@ -5,7 +5,7 @@ import { Container } from "@/components/layout/container";
 import { SectionEyebrow } from "@/components/layout/section-eyebrow";
 import { useLocale } from "@/components/layout/locale-provider";
 
-export default function ContactPage() {
+export function ContactView() {
   const { t } = useLocale();
   const contact = t.contact;
 
@@ -62,7 +62,7 @@ export default function ContactPage() {
                 <span className="font-mono text-[10.5px] tracking-[.14em] text-primary uppercase">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <h3 className="mt-4 font-heading text-h4">{title}</h3>
+                <h2 className="mt-4 font-heading text-h4">{title}</h2>
                 <p className="mt-2 text-small font-normal text-muted-foreground">
                   {body}
                 </p>

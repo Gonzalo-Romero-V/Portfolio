@@ -17,7 +17,7 @@ const stack = [
   "Java",
 ];
 
-export default function AboutPage() {
+export function AboutView() {
   const { t } = useLocale();
   const about = t.about;
 
@@ -50,7 +50,7 @@ export default function AboutPage() {
                   <span className="flex size-9 items-center justify-center rounded-[11px] border border-primary/30 bg-primary/10 text-accent">
                     <Icon className="size-[17px]" />
                   </span>
-                  <h3 className="mt-5 font-heading text-h4">{title}</h3>
+                  <h2 className="mt-5 font-heading text-h4">{title}</h2>
                   <p className="mt-2 text-small font-normal text-muted-foreground">
                     {body}
                   </p>

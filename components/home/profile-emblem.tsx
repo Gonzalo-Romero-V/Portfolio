@@ -174,7 +174,7 @@ export function ProfileEmblem() {
               {/* eslint-disable-next-line @next/next/no-img-element -- plain
                   img on purpose: no object-fit, no cropping, just x/y/size. */}
               <img
-                src="/pictures/profile-picture2.jpeg"
+                src="/pictures/profile-picture.jpeg"
                 alt="Gonzalo Romero"
                 style={{
                   position: "absolute",

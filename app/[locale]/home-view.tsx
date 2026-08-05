@@ -7,8 +7,8 @@ import { useLocale } from "@/components/layout/locale-provider";
 import { ProfileEmblem } from "@/components/home/profile-emblem";
 import { StatCard } from "@/components/home/stat-card";
 
-export default function Home() {
-  const { t } = useLocale();
+export function HomeView() {
+  const { t, locale } = useLocale();
   const home = t.home;
 
   return (
@@ -42,7 +42,7 @@ export default function Home() {
                 {home.ctaWhatsapp} <MessageCircle className="size-[15px]" />
               </a>
               <a
-                href="/portfolio"
+                href={`/${locale}/portfolio`}
                 className="inline-flex items-center gap-2.5 rounded-[14px] border border-border bg-card px-[26px] py-[15px] text-[13.5px] font-medium text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,.16)] backdrop-blur-[18px]"
               >
                 {home.ctaProjects}{" "}

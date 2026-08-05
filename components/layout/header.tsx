@@ -2,14 +2,29 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useLocale } from "@/components/layout/locale-provider";
 import { cn } from "@/lib/utils";
 
-function LocaleSwitch({ className }: { className?: string }) {
-  const { locale, setLocale } = useLocale();
+/** Sets the NEXT_LOCALE cookie so a later bare-domain visit (proxy.ts)
+    remembers the choice, on top of the real navigation Link already does —
+    unlike the old client-state toggle, switching language now lands on a
+    distinct, crawlable /es or /en URL. */
+function LocaleSwitch({
+  className,
+  restPath,
+}: {
+  className?: string;
+  restPath: string;
+}) {
+  const { locale } = useLocale();
+
+  function remember(next: "es" | "en") {
+    document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000`;
+  }
 
   return (
     <div
@@ -18,9 +33,9 @@ function LocaleSwitch({ className }: { className?: string }) {
         className,
       )}
     >
-      <button
-        type="button"
-        onClick={() => setLocale("es")}
+      <Link
+        href={`/es${restPath}`}
+        onClick={() => remember("es")}
         aria-pressed={locale === "es"}
         className={cn(
           "rounded-full px-2.5 py-1 font-mono text-[10px] tracking-wider transition-colors",
@@ -30,10 +45,10 @@ function LocaleSwitch({ className }: { className?: string }) {
         )}
       >
         ES
-      </button>
-      <button
-        type="button"
-        onClick={() => setLocale("en")}
+      </Link>
+      <Link
+        href={`/en${restPath}`}
+        onClick={() => remember("en")}
         aria-pressed={locale === "en"}
         className={cn(
           "rounded-full px-2.5 py-1 font-mono text-[10px] tracking-wider transition-colors",
@@ -43,20 +58,22 @@ function LocaleSwitch({ className }: { className?: string }) {
         )}
       >
         EN
-      </button>
+      </Link>
     </div>
   );
 }
 
 export function Header() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const restPath = pathname.replace(/^\/(es|en)/, "");
 
   const links = [
-    { href: "/", label: t.nav.home },
-    { href: "/portfolio", label: t.nav.portfolio },
-    { href: "/about", label: t.nav.about },
-    { href: "/contact", label: t.nav.contact },
+    { href: `/${locale}`, label: t.nav.home },
+    { href: `/${locale}/portfolio`, label: t.nav.portfolio },
+    { href: `/${locale}/about`, label: t.nav.about },
+    { href: `/${locale}/contact`, label: t.nav.contact },
   ];
 
   return (
@@ -80,7 +97,7 @@ export function Header() {
           </div>
 
           <div className="hidden items-center gap-3 sm:flex">
-            <LocaleSwitch />
+            <LocaleSwitch restPath={restPath} />
             <ThemeToggle />
           </div>
 
@@ -114,7 +131,7 @@ export function Header() {
               ))}
             </div>
             <div className="flex items-center justify-between gap-3 border-t border-border pt-5">
-              <LocaleSwitch />
+              <LocaleSwitch restPath={restPath} />
               <ThemeToggle />
             </div>
           </div>
