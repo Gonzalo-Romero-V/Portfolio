@@ -25,5 +25,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|.*\\..*).*)"],
+  // Excludes: _next internals, /api, anything with a file extension
+  // (images, robots.txt, sitemap.xml, etc.), and the extension-less
+  // generated icon/OG-image routes, which would otherwise get redirected
+  // to e.g. /es/icon and 404.
+  matcher: ["/((?!_next|api|icon$|apple-icon$|opengraph-image$|twitter-image$|.*\\..*).*)"],
 };

@@ -80,8 +80,17 @@ export function Header() {
     <header className="w-full border-b border-border bg-[color-mix(in_srgb,var(--background)_var(--chrome-opacity),transparent)] py-8 backdrop-blur-[var(--chrome-blur)]">
       <Container>
         <nav className="flex items-center justify-between gap-6">
-          <span className="flex items-center gap-2 font-heading text-[15px] font-black tracking-tight">
-            GR<span className="text-primary">.</span>
+          {/* aria-hidden + aria-label: "GR." read aloud is "gr." — the
+              Spanish abbreviation for "gramo" — so screen readers/TTS
+              expand it to "gramo" instead of spelling it out. The visible
+              mark stays as-is; assistive tech gets the real name instead. */}
+          <span
+            className="flex items-center gap-2 font-heading text-[15px] font-black tracking-tight"
+            aria-label="Gonzalo Romero"
+          >
+            <span aria-hidden="true">
+              GR<span className="text-primary">.</span>
+            </span>
           </span>
 
           <div className="hidden items-center gap-6 sm:flex">
