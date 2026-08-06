@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 async function loadArchivoBlack() {
@@ -14,10 +13,24 @@ async function loadArchivoBlack() {
   return fontRes.arrayBuffer();
 }
 
-// "GR" in Archivo Black, same face as the header logo's font-heading/
-// font-black (components/layout/header.tsx) — no dot here, just the letters.
-export default async function Icon() {
+// Two variants of the same mark:
+// - "tab": 32x32, bare "GR" — what browsers pick for the tab favicon.
+// - "search": 48x48 (Google's minimum recommended favicon size, must be a
+//   multiple of 48px), full "GR." logo with the primary-colored dot from
+//   the header (components/layout/header.tsx) — Google indexes this one
+//   for search results instead of the plain tab icon.
+export function generateImageMetadata() {
+  return [
+    { id: "tab", size: { width: 32, height: 32 }, contentType },
+    { id: "search", size: { width: 48, height: 48 }, contentType },
+  ];
+}
+
+export default async function Icon({ id }: { id: Promise<string | number> }) {
+  const iconId = await id;
   const archivoBlack = await loadArchivoBlack();
+  const withDot = iconId === "search";
+  const scale = withDot ? 48 / 32 : 1;
 
   return new ImageResponse(
     (
@@ -29,22 +42,26 @@ export default async function Icon() {
           alignItems: "center",
           justifyContent: "center",
           // Fixed dark background (site's --background in dark mode) so
-          // the white "GR" stays legible regardless of the browser/tab
-          // chrome's own theme, instead of a transparent PNG that
-          // disappears against a light browser UI.
+          // the mark stays legible regardless of the browser/tab chrome's
+          // own theme, instead of a transparent PNG that disappears
+          // against a light browser UI.
           background: "#050303",
           color: "#f5efec",
           fontFamily: "Archivo",
           fontWeight: 900,
-          fontSize: 20,
-          letterSpacing: "-0.5px",
+          fontSize: 20 * scale,
+          letterSpacing: `${-0.5 * scale}px`,
         }}
       >
-        GR
+        <span style={{ display: "flex" }}>GR</span>
+        {withDot && (
+          <span style={{ display: "flex", color: "#6dd09c" }}>.</span>
+        )}
       </div>
     ),
     {
-      ...size,
+      width: withDot ? 48 : 32,
+      height: withDot ? 48 : 32,
       fonts: [{ name: "Archivo", data: archivoBlack, weight: 900, style: "normal" }],
     },
   );
