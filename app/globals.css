@@ -94,3 +94,117 @@
     }
   }
 }
+
+/* SiteBackground's ambient mesh drift (components/layout/site-background.tsx).
+   Was a JS requestAnimationFrame loop writing `transform` every frame (three
+   independent-frequency sine waves per blob, summed) — moved to CSS
+   `@keyframes` so the compositor drives it instead of the main thread, which
+   is what was causing jank on lower-end phones. Each blob keeps its own
+   independent duration (14.8s/18.8s/23.6s — no short common multiple, same
+   "never visibly repeats together" property as before); within one blob,
+   X/Y/scale now share that single cycle with a phase offset between them
+   (sampled from the original per-axis sine waves at 24 points) instead of
+   three fully decorrelated frequencies — imperceptible under a 50-70px blur,
+   but worth knowing this is an approximation, not a byte-identical port.
+   Timing is `linear`, not `ease-in-out`: easing *within* each keyframe
+   segment decelerates in and out of every single stop, which reads as a
+   faint stutter at each of the sampled points — 24 evenly-spaced samples of
+   the sine curve plus linear interpolation between them is what actually
+   reads as continuous drift, closer to the original per-frame JS sine.
+   `translate`/`scale` are the CSS Individual Transform Properties (not the
+   `transform` shorthand) specifically so they can animate independently
+   without one overwriting the other. Gated behind prefers-reduced-motion
+   like the view-transition crossfade above — JS-driven motion never had
+   this, since requestAnimationFrame doesn't check it automatically. */
+@media (prefers-reduced-motion: no-preference) {
+  .mesh-blob {
+    will-change: translate, scale;
+  }
+
+  @keyframes mesh-1 {
+    0% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * 53.1px); scale: 1.045; }
+    4.17% { translate: calc(var(--mesh-amount) * 14.2px) calc(var(--mesh-amount) * 55px); scale: 1.023; }
+    8.33% { translate: calc(var(--mesh-amount) * 27.5px) calc(var(--mesh-amount) * 53.1px); scale: 1; }
+    12.5% { translate: calc(var(--mesh-amount) * 38.9px) calc(var(--mesh-amount) * 47.6px); scale: 0.977; }
+    16.67% { translate: calc(var(--mesh-amount) * 47.6px) calc(var(--mesh-amount) * 38.9px); scale: 0.955; }
+    20.83% { translate: calc(var(--mesh-amount) * 53.1px) calc(var(--mesh-amount) * 27.5px); scale: 0.936; }
+    25% { translate: calc(var(--mesh-amount) * 55px) calc(var(--mesh-amount) * 14.2px); scale: 0.922; }
+    29.17% { translate: calc(var(--mesh-amount) * 53.1px) calc(var(--mesh-amount) * 0px); scale: 0.913; }
+    33.33% { translate: calc(var(--mesh-amount) * 47.6px) calc(var(--mesh-amount) * -14.2px); scale: 0.91; }
+    37.5% { translate: calc(var(--mesh-amount) * 38.9px) calc(var(--mesh-amount) * -27.5px); scale: 0.913; }
+    41.67% { translate: calc(var(--mesh-amount) * 27.5px) calc(var(--mesh-amount) * -38.9px); scale: 0.922; }
+    45.83% { translate: calc(var(--mesh-amount) * 14.2px) calc(var(--mesh-amount) * -47.6px); scale: 0.936; }
+    50% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * -53.1px); scale: 0.955; }
+    54.17% { translate: calc(var(--mesh-amount) * -14.2px) calc(var(--mesh-amount) * -55px); scale: 0.977; }
+    58.33% { translate: calc(var(--mesh-amount) * -27.5px) calc(var(--mesh-amount) * -53.1px); scale: 1; }
+    62.5% { translate: calc(var(--mesh-amount) * -38.9px) calc(var(--mesh-amount) * -47.6px); scale: 1.023; }
+    66.67% { translate: calc(var(--mesh-amount) * -47.6px) calc(var(--mesh-amount) * -38.9px); scale: 1.045; }
+    70.83% { translate: calc(var(--mesh-amount) * -53.1px) calc(var(--mesh-amount) * -27.5px); scale: 1.064; }
+    75% { translate: calc(var(--mesh-amount) * -55px) calc(var(--mesh-amount) * -14.2px); scale: 1.078; }
+    79.17% { translate: calc(var(--mesh-amount) * -53.1px) calc(var(--mesh-amount) * 0px); scale: 1.087; }
+    83.33% { translate: calc(var(--mesh-amount) * -47.6px) calc(var(--mesh-amount) * 14.2px); scale: 1.09; }
+    87.5% { translate: calc(var(--mesh-amount) * -38.9px) calc(var(--mesh-amount) * 27.5px); scale: 1.087; }
+    91.67% { translate: calc(var(--mesh-amount) * -27.5px) calc(var(--mesh-amount) * 38.9px); scale: 1.078; }
+    95.83% { translate: calc(var(--mesh-amount) * -14.2px) calc(var(--mesh-amount) * 47.6px); scale: 1.064; }
+    100% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * 53.1px); scale: 1.045; }
+  }
+  .mesh-blob-1 { animation: mesh-1 14.8s linear infinite; }
+
+  @keyframes mesh-2 {
+    0% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * 62.8px); scale: 1.035; }
+    4.17% { translate: calc(var(--mesh-amount) * 16.8px) calc(var(--mesh-amount) * 65px); scale: 1.018; }
+    8.33% { translate: calc(var(--mesh-amount) * 32.5px) calc(var(--mesh-amount) * 62.8px); scale: 1; }
+    12.5% { translate: calc(var(--mesh-amount) * 46px) calc(var(--mesh-amount) * 56.3px); scale: 0.982; }
+    16.67% { translate: calc(var(--mesh-amount) * 56.3px) calc(var(--mesh-amount) * 46px); scale: 0.965; }
+    20.83% { translate: calc(var(--mesh-amount) * 62.8px) calc(var(--mesh-amount) * 32.5px); scale: 0.951; }
+    25% { translate: calc(var(--mesh-amount) * 65px) calc(var(--mesh-amount) * 16.8px); scale: 0.939; }
+    29.17% { translate: calc(var(--mesh-amount) * 62.8px) calc(var(--mesh-amount) * 0px); scale: 0.932; }
+    33.33% { translate: calc(var(--mesh-amount) * 56.3px) calc(var(--mesh-amount) * -16.8px); scale: 0.93; }
+    37.5% { translate: calc(var(--mesh-amount) * 46px) calc(var(--mesh-amount) * -32.5px); scale: 0.932; }
+    41.67% { translate: calc(var(--mesh-amount) * 32.5px) calc(var(--mesh-amount) * -46px); scale: 0.939; }
+    45.83% { translate: calc(var(--mesh-amount) * 16.8px) calc(var(--mesh-amount) * -56.3px); scale: 0.951; }
+    50% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * -62.8px); scale: 0.965; }
+    54.17% { translate: calc(var(--mesh-amount) * -16.8px) calc(var(--mesh-amount) * -65px); scale: 0.982; }
+    58.33% { translate: calc(var(--mesh-amount) * -32.5px) calc(var(--mesh-amount) * -62.8px); scale: 1; }
+    62.5% { translate: calc(var(--mesh-amount) * -46px) calc(var(--mesh-amount) * -56.3px); scale: 1.018; }
+    66.67% { translate: calc(var(--mesh-amount) * -56.3px) calc(var(--mesh-amount) * -46px); scale: 1.035; }
+    70.83% { translate: calc(var(--mesh-amount) * -62.8px) calc(var(--mesh-amount) * -32.5px); scale: 1.049; }
+    75% { translate: calc(var(--mesh-amount) * -65px) calc(var(--mesh-amount) * -16.8px); scale: 1.061; }
+    79.17% { translate: calc(var(--mesh-amount) * -62.8px) calc(var(--mesh-amount) * 0px); scale: 1.068; }
+    83.33% { translate: calc(var(--mesh-amount) * -56.3px) calc(var(--mesh-amount) * 16.8px); scale: 1.07; }
+    87.5% { translate: calc(var(--mesh-amount) * -46px) calc(var(--mesh-amount) * 32.5px); scale: 1.068; }
+    91.67% { translate: calc(var(--mesh-amount) * -32.5px) calc(var(--mesh-amount) * 46px); scale: 1.061; }
+    95.83% { translate: calc(var(--mesh-amount) * -16.8px) calc(var(--mesh-amount) * 56.3px); scale: 1.049; }
+    100% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * 62.8px); scale: 1.035; }
+  }
+  .mesh-blob-2 { animation: mesh-2 18.8s linear infinite; }
+
+  @keyframes mesh-3 {
+    0% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * 67.6px); scale: 1.05; }
+    4.17% { translate: calc(var(--mesh-amount) * 18.1px) calc(var(--mesh-amount) * 70px); scale: 1.026; }
+    8.33% { translate: calc(var(--mesh-amount) * 35px) calc(var(--mesh-amount) * 67.6px); scale: 1; }
+    12.5% { translate: calc(var(--mesh-amount) * 49.5px) calc(var(--mesh-amount) * 60.6px); scale: 0.974; }
+    16.67% { translate: calc(var(--mesh-amount) * 60.6px) calc(var(--mesh-amount) * 49.5px); scale: 0.95; }
+    20.83% { translate: calc(var(--mesh-amount) * 67.6px) calc(var(--mesh-amount) * 35px); scale: 0.929; }
+    25% { translate: calc(var(--mesh-amount) * 70px) calc(var(--mesh-amount) * 18.1px); scale: 0.913; }
+    29.17% { translate: calc(var(--mesh-amount) * 67.6px) calc(var(--mesh-amount) * 0px); scale: 0.903; }
+    33.33% { translate: calc(var(--mesh-amount) * 60.6px) calc(var(--mesh-amount) * -18.1px); scale: 0.9; }
+    37.5% { translate: calc(var(--mesh-amount) * 49.5px) calc(var(--mesh-amount) * -35px); scale: 0.903; }
+    41.67% { translate: calc(var(--mesh-amount) * 35px) calc(var(--mesh-amount) * -49.5px); scale: 0.913; }
+    45.83% { translate: calc(var(--mesh-amount) * 18.1px) calc(var(--mesh-amount) * -60.6px); scale: 0.929; }
+    50% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * -67.6px); scale: 0.95; }
+    54.17% { translate: calc(var(--mesh-amount) * -18.1px) calc(var(--mesh-amount) * -70px); scale: 0.974; }
+    58.33% { translate: calc(var(--mesh-amount) * -35px) calc(var(--mesh-amount) * -67.6px); scale: 1; }
+    62.5% { translate: calc(var(--mesh-amount) * -49.5px) calc(var(--mesh-amount) * -60.6px); scale: 1.026; }
+    66.67% { translate: calc(var(--mesh-amount) * -60.6px) calc(var(--mesh-amount) * -49.5px); scale: 1.05; }
+    70.83% { translate: calc(var(--mesh-amount) * -67.6px) calc(var(--mesh-amount) * -35px); scale: 1.071; }
+    75% { translate: calc(var(--mesh-amount) * -70px) calc(var(--mesh-amount) * -18.1px); scale: 1.087; }
+    79.17% { translate: calc(var(--mesh-amount) * -67.6px) calc(var(--mesh-amount) * 0px); scale: 1.097; }
+    83.33% { translate: calc(var(--mesh-amount) * -60.6px) calc(var(--mesh-amount) * 18.1px); scale: 1.1; }
+    87.5% { translate: calc(var(--mesh-amount) * -49.5px) calc(var(--mesh-amount) * 35px); scale: 1.097; }
+    91.67% { translate: calc(var(--mesh-amount) * -35px) calc(var(--mesh-amount) * 49.5px); scale: 1.087; }
+    95.83% { translate: calc(var(--mesh-amount) * -18.1px) calc(var(--mesh-amount) * 60.6px); scale: 1.071; }
+    100% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * 67.6px); scale: 1.05; }
+  }
+  .mesh-blob-3 { animation: mesh-3 23.6s linear infinite; }
+}
