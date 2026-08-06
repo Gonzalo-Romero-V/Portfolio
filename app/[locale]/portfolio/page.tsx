@@ -16,8 +16,8 @@ export async function generateMetadata({
 
   const seoTitle =
     locale === "es"
-      ? "Proyectos — Web, IA, Automatización"
-      : "Projects — Web, AI, Automation";
+      ? "Proyectos Web, IA y Automatización"
+      : "Web, AI and Automation Projects";
 
   return {
     // Plain string, not `absolute` — this segment is nested below the root

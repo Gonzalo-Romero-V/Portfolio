@@ -17,8 +17,8 @@ export async function generateMetadata({
   const heroTitle = `${t.home.heroTitlePrefix} ${t.home.heroTitleHighlight}`;
   const seoTitle =
     locale === "es"
-      ? "Desarrollador Full Stack — Ecuador"
-      : "Full Stack Developer — Ecuador";
+      ? "Desarrollador Full Stack en Ecuador"
+      : "Full Stack Developer in Ecuador";
 
   return {
     // Home lives in the same route segment as the root layout that defines
