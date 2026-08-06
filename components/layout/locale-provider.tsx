@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useLayoutEffect } from "react";
 import type { ReactNode } from "react";
 import { dictionary, type Dictionary, type Locale } from "@/lib/i18n";
 
@@ -25,12 +25,15 @@ export function LocaleProvider({
 }) {
   // Dark/light lives as a `.dark` class the pre-hydration script in
   // app/[locale]/layout.tsx applies outside of React's own className prop
-  // (see that file's comment). On some mobile browsers, navigating between
-  // /es and /en — which re-renders <html> from the root layout — was
-  // observed to drop that class, silently resetting dark to light. This
-  // re-asserts it from localStorage every time `locale` changes, i.e.
-  // exactly when that navigation happens.
-  useEffect(() => {
+  // (see that file's comment). That script only runs on a real (hard) page
+  // load, because the browser executes inline scripts as it parses raw
+  // HTML — a <script> React re-creates client-side (which is what happens
+  // to it when a locale switch re-renders RootLayout) never executes, full
+  // stop, that's a DOM rule. So on every locale switch the class was
+  // silently left unfixed by that script. useLayoutEffect (not useEffect)
+  // re-asserts it from localStorage synchronously before the browser paints
+  // the new frame, so there's no flash of the wrong theme in between.
+  useLayoutEffect(() => {
     try {
       const stored = localStorage.getItem("theme");
       document.documentElement.classList.toggle("dark", stored !== "light");
