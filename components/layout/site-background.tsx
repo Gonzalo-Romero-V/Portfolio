@@ -9,8 +9,20 @@
 export function SiteBackground() {
   return (
     <div
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background"
-      style={{ opacity: "var(--mesh-opacity)" }}
+      className="pointer-events-none fixed -z-10 overflow-hidden bg-background"
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        // Extends well past the viewport's bottom edge instead of a plain
+        // `inset-0` flush to it: on mobile, the address bar collapsing on
+        // the first scroll of a session grows the visible viewport in
+        // real time, and the fixed layer's repaint can lag that by a
+        // frame, leaving a blank gap at the bottom. This overscan means
+        // there's already background there regardless of that timing.
+        bottom: "-160px",
+        opacity: "var(--mesh-opacity)",
+      }}
     >
       <div
         className="mesh-blob mesh-blob-1 absolute -top-[6%] -left-[12%] h-[900px] w-[900px] rounded-full"
