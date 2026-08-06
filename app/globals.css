@@ -121,6 +121,12 @@
     will-change: translate, scale;
   }
 
+  /* Set by components/layout/scroll-pause.tsx while the page is actively
+     scrolling — see that file for why. */
+  html.is-scrolling .mesh-blob {
+    animation-play-state: paused;
+  }
+
   @keyframes mesh-1 {
     0% { translate: calc(var(--mesh-amount) * 0px) calc(var(--mesh-amount) * 53.1px); scale: 1.045; }
     4.17% { translate: calc(var(--mesh-amount) * 14.2px) calc(var(--mesh-amount) * 55px); scale: 1.023; }

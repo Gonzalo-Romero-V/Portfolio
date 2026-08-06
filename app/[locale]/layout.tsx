@@ -4,6 +4,7 @@ import { Archivo, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { SiteBackground } from "@/components/layout/site-background";
+import { ScrollPause } from "@/components/layout/scroll-pause";
 import { LocaleProvider } from "@/components/layout/locale-provider";
 import { dictionary, type Locale } from "@/lib/i18n";
 import { defaultLocale, isLocale, locales, ogImage, siteUrl, socialLinks } from "@/lib/seo";
@@ -114,6 +115,7 @@ export default async function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <SiteBackground />
+        <ScrollPause />
         <LocaleProvider locale={locale}>
           <Header />
           {children}

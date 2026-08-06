@@ -101,9 +101,11 @@
   --chrome-blur: 0px;
 
   /* Ambient mesh background (components/layout/site-background.tsx): the
-     motion itself is procedural JS (summed sine drift + cursor parallax),
-     read from these each frame — not CSS keyframes, so there's nothing to
-     restart on navigation and no fixed loop length. */
+     drift itself is CSS @keyframes (see globals.css's .mesh-blob-* rules),
+     which read --mesh-amount live via calc(). --mesh-speed and --mesh-cursor
+     are no longer read by anything (the drift's per-blob duration is now
+     baked into each animation's declared length; cursor parallax was
+     removed as dead code — --mesh-cursor was always 0 in production). */
   --mesh-opacity: 0.7;
   --mesh-blur-scale: 0.52;
   --mesh-speed: 2.5;
