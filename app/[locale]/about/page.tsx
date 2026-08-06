@@ -14,17 +14,20 @@ export async function generateMetadata({
   const locale = rawLocale;
   const t = dictionary[locale];
 
-  const title =
+  const ogTitle =
     locale === "es"
       ? "Sobre mí — Estudiante de Ingeniería de Software"
       : "About me — Software Engineering Student";
+  const seoTitle = locale === "es" ? "Sobre mí" : "About me";
 
   return {
-    title,
+    // Plain string, not `absolute` — this segment is nested below the root
+    // layout, so title.template ("Gonzalo Romero | %s") applies normally.
+    title: seoTitle,
     description: t.about.bio,
     alternates: buildAlternates(locale, "/about"),
     openGraph: {
-      title,
+      title: ogTitle,
       description: t.about.bio,
       url: buildAlternates(locale, "/about").canonical,
       images: [ogImage],

@@ -46,11 +46,9 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      // Kept deliberately distinct from any page's own title (e.g. the
-      // home page's): if a child's resolved title string is identical to
-      // this default, Next.js 16 treats it as "no override" and skips
-      // applying the template to it.
-      template: "%s | Gonzalo Romero",
+      // Name first, consistently, across every page's <title> (SEO for the
+      // name itself) — "%s" is each page's own descriptive part.
+      template: "Gonzalo Romero | %s",
       default: "Gonzalo Romero",
     },
     description: t.home.heroParagraph,

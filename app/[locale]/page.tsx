@@ -14,18 +14,23 @@ export async function generateMetadata({
   const locale = rawLocale;
   const t = dictionary[locale];
 
-  const title = `${t.home.heroTitlePrefix} ${t.home.heroTitleHighlight}`;
+  const heroTitle = `${t.home.heroTitlePrefix} ${t.home.heroTitleHighlight}`;
+  const seoTitle =
+    locale === "es"
+      ? "Desarrollador Full Stack — Ecuador"
+      : "Full Stack Developer — Ecuador";
 
   return {
     // Home lives in the same route segment as the root layout that defines
     // title.template, so the template isn't applied automatically here the
     // way it is for nested pages (about/contact/portfolio) — `absolute` is
-    // set explicitly instead so the "| Gonzalo Romero" suffix still shows.
-    title: { absolute: `${title} | Gonzalo Romero` },
+    // set explicitly instead, built by hand in the same "Name | ..." shape
+    // the template produces everywhere else.
+    title: { absolute: `Gonzalo Romero | ${seoTitle}` },
     description: t.home.heroParagraph,
     alternates: buildAlternates(locale, ""),
     openGraph: {
-      title,
+      title: heroTitle,
       description: t.home.heroParagraph,
       url: buildAlternates(locale, "").canonical,
       images: [ogImage],

@@ -14,8 +14,15 @@ export async function generateMetadata({
   const locale = rawLocale;
   const t = dictionary[locale];
 
+  const seoTitle =
+    locale === "es"
+      ? "Proyectos — Web, IA, Automatización"
+      : "Projects — Web, AI, Automation";
+
   return {
-    title: t.portfolio.title,
+    // Plain string, not `absolute` — this segment is nested below the root
+    // layout, so title.template ("Gonzalo Romero | %s") applies normally.
+    title: seoTitle,
     description: t.portfolio.intro,
     alternates: buildAlternates(locale, "/portfolio"),
     openGraph: {
