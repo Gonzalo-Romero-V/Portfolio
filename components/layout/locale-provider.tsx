@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
 import { dictionary, type Dictionary, type Locale } from "@/lib/i18n";
 
@@ -23,6 +23,22 @@ export function LocaleProvider({
   locale: Locale;
   children: ReactNode;
 }) {
+  // Dark/light lives as a `.dark` class the pre-hydration script in
+  // app/[locale]/layout.tsx applies outside of React's own className prop
+  // (see that file's comment). On some mobile browsers, navigating between
+  // /es and /en — which re-renders <html> from the root layout — was
+  // observed to drop that class, silently resetting dark to light. This
+  // re-asserts it from localStorage every time `locale` changes, i.e.
+  // exactly when that navigation happens.
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("theme");
+      document.documentElement.classList.toggle("dark", stored !== "light");
+    } catch {
+      // Storage disabled/full — leave whatever is already on <html>.
+    }
+  }, [locale]);
+
   return (
     <LocaleContext.Provider value={{ locale, t: dictionary[locale] }}>
       {children}
