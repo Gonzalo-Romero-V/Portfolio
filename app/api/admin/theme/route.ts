@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { isValidAdminSecret } from "@/lib/admin-auth";
-import { writeTheme } from "@/lib/theme-store";
-import { parseThemeConfig } from "@/lib/theme-config";
+import { readThemeState, writeThemeState } from "@/lib/theme-store";
+import { parseThemeConfig, parseThemeMode } from "@/lib/theme-config";
 
+/** Publishes an edit to ONE mode's "vigente" (live) theme — light and dark
+    are saved independently, since they're edited independently. */
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const secret = typeof body?.secret === "string" ? body.secret : "";
@@ -12,13 +14,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "invalid secret" }, { status: 401 });
   }
 
+  const mode = parseThemeMode(body?.mode);
   const theme = parseThemeConfig(body?.theme);
-  if (!theme) {
+  if (!mode || !theme) {
     return NextResponse.json({ ok: false, error: "invalid theme payload" }, { status: 400 });
   }
 
+  const state = await readThemeState();
+  state.live = { ...state.live, [mode]: theme };
+
   try {
-    await writeTheme(theme);
+    await writeThemeState(state);
   } catch (error) {
     console.error("[api/admin/theme] write failed", error);
     return NextResponse.json({ ok: false, error: "storage write failed" }, { status: 502 });
@@ -31,5 +37,5 @@ export async function POST(request: Request) {
   // cached HTML while it regenerates in the background.
   revalidatePath("/", "layout");
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, state });
 }

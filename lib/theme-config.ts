@@ -1,7 +1,7 @@
-/** Shared shape for the site-wide appearance override the admin console
-    edits. Used by: the admin UI (components/admin/*), the two protected
-    routes (app/api/admin/*), and the public root layout that applies it
-    (app/[locale]/layout.tsx) — one definition instead of three copies. */
+/** Shared shape for the site-wide appearance the admin console edits. Used
+    by: the admin UI (components/admin/*), the protected routes
+    (app/api/admin/*), and the public root layout that applies it
+    (app/[locale]/layout.tsx) — one definition instead of scattered copies. */
 
 export interface BrandColor {
   h: number;
@@ -21,8 +21,10 @@ export interface BackgroundConfig {
   speed: number;
   amount: number;
   cursor: number;
-  /** true = tone tracks --primary-h - 13 / 80% / 33% (theme.css's own
-      calc()); false = `tone` below is a literal override. */
+  /** true = tone tracks --primary-h - 13 / 80% / 33% (a calc()-from-primary
+      relationship); false = `tone` below is a literal value. theme.css's
+      compiled defaults are NOT anchored (see DEFAULT_THEME_PAIR) — this
+      only matters once someone edits away from them. */
   toneAnchored: boolean;
   tone: ToneConfig;
 }
@@ -38,29 +40,78 @@ export interface ThemeConfig {
   chrome: ChromeConfig;
 }
 
-/** Mirrors app/theme.css's :root (light theme) values — the starting point
-    before any admin edit has ever been saved. Not necessarily what .dark
-    shows (its --primary-l/--mesh-2-h differ); see the layout override
-    comment in app/[locale]/layout.tsx for why that's an accepted tradeoff. */
-export const DEFAULT_THEME: ThemeConfig = {
-  brand: { h: 149, s: 51, l: 62 },
-  background: {
-    opacity: 0.7,
-    blurScale: 0.52,
-    speed: 2.5,
-    amount: 2.85,
-    cursor: 0,
-    toneAnchored: true,
-    tone: { h: 149 - 13, s: 80, l: 33 },
+export type ThemeMode = "light" | "dark";
+
+/** Light and dark are edited independently — theme.css itself keeps them
+    separate (:root vs .dark), so "vigente" and "default" both need one
+    ThemeConfig per mode, not a single value applied to both. */
+export type ThemePair = Record<ThemeMode, ThemeConfig>;
+
+export interface ThemePreset {
+  id: string;
+  name: string;
+  theme: ThemePair;
+  createdAt: number;
+}
+
+/** Everything persisted in the store, under one Global Config key:
+    - live: what's actually served to visitors right now ("vigente").
+    - default: the safety net "restaurar a default" reverts to. Does NOT
+      change when `live` changes — only an explicit "promote" call copies
+      live → default (see app/api/admin/theme/default/route.ts).
+    - presets: named snapshots of `live`, saved/applied/deleted on demand. */
+export interface ThemeStoreState {
+  live: ThemePair;
+  default: ThemePair;
+  presets: ThemePreset[];
+}
+
+/** Transcribed directly from app/theme.css's :root and .dark blocks — the
+    site's real compiled appearance before any admin edit. This is what
+    ThemeStoreState.default seeds to on first read (see readThemeState in
+    lib/theme-store.ts) and what "restaurar a default" returns to until an
+    admin explicitly promotes a different live value over it.
+
+    Note --mesh-2-* is a literal value in BOTH modes in theme.css, not the
+    "--primary-h - 13 / 80% / 33%" anchor formula the old dev-only tuner
+    (components/home/site-mesh-controls.tsx) offers as a convenience — so
+    toneAnchored is false here, matching the actual compiled CSS exactly. */
+export const DEFAULT_THEME_PAIR: ThemePair = {
+  light: {
+    brand: { h: 149, s: 51, l: 62 },
+    background: {
+      opacity: 0.7,
+      blurScale: 0.52,
+      speed: 2.5,
+      amount: 2.85,
+      cursor: 0,
+      toneAnchored: false,
+      tone: { h: 130, s: 100, l: 33 },
+    },
+    chrome: { opacity: 44, blur: 0 },
   },
-  chrome: { opacity: 44, blur: 0 },
+  dark: {
+    brand: { h: 149, s: 51, l: 45 },
+    background: {
+      // Not redeclared under .dark in theme.css, so they're the same
+      // numbers as :root's — .dark only overrides brand.l and mesh-2-h.
+      opacity: 0.7,
+      blurScale: 0.52,
+      speed: 2.5,
+      amount: 2.85,
+      cursor: 0,
+      toneAnchored: false,
+      tone: { h: 173, s: 100, l: 33 },
+    },
+    chrome: { opacity: 44, blur: 0 },
+  },
 };
 
 /** Same ranges as the sliders in components/admin/*-section.tsx. Runtime
     validation for data crossing a trust boundary (an authenticated request
     body is still attacker-shaped input, and Global Config has no schema of
     its own) — rejects anything malformed instead of writing it through to
-    the store and, from there, into every visitor's <html style>. */
+    the store and, from there, into every visitor's <html>. */
 function num(value: unknown, min: number, max: number): number | null {
   if (typeof value !== "number" || !Number.isFinite(value)) return null;
   return value < min || value > max ? null : value;
@@ -106,4 +157,51 @@ export function parseThemeConfig(input: unknown): ThemeConfig | null {
     background: { opacity, blurScale, speed, amount, cursor, toneAnchored, tone: { h: toneH, s: toneS, l: toneL } },
     chrome: { opacity: chromeOpacity, blur: chromeBlur },
   };
+}
+
+export function parseThemeMode(input: unknown): ThemeMode | null {
+  return input === "light" || input === "dark" ? input : null;
+}
+
+function cssVars(theme: ThemeConfig): string {
+  const vars: Record<string, string> = {
+    "--primary-h": `${theme.brand.h}`,
+    "--primary-s": `${theme.brand.s}%`,
+    "--primary-l": `${theme.brand.l}%`,
+    "--mesh-opacity": `${theme.background.opacity}`,
+    "--mesh-blur-scale": `${theme.background.blurScale}`,
+    "--mesh-speed": `${theme.background.speed}`,
+    "--mesh-amount": `${theme.background.amount}`,
+    "--mesh-cursor": `${theme.background.cursor}`,
+    "--mesh-2-h": `${theme.background.tone.h}`,
+    "--mesh-2-s": `${theme.background.tone.s}%`,
+    "--mesh-2-l": `${theme.background.tone.l}%`,
+    "--chrome-opacity": `${theme.chrome.opacity}%`,
+    "--chrome-blur": `${theme.chrome.blur}px`,
+  };
+  return Object.entries(vars)
+    .map(([k, v]) => `${k}:${v}`)
+    .join(";");
+}
+
+/** A <style> block's worth of CSS overriding both modes at once, one
+    selector per mode. Used identically on the server (app/[locale]/layout.tsx,
+    the real override visitors get) and on the client (components/admin/
+    admin-console.tsx, live-previewing an unsaved edit in that tab) — same
+    mechanism, same specificity trick, so what the admin sees IS what
+    visitors would see. `html:root`/`html.dark` (not plain `:root`/`.dark`)
+    only to guarantee this wins over theme.css's own rules regardless of
+    stylesheet order, not because the extra specificity is otherwise
+    needed. */
+export function themePairToCss(pair: ThemePair): string {
+  return `html:root{${cssVars(pair.light)}}html.dark{${cssVars(pair.dark)}}`;
+}
+
+export function parseThemePair(input: unknown): ThemePair | null {
+  if (typeof input !== "object" || input === null) return null;
+  const v = input as Record<string, unknown>;
+  const light = parseThemeConfig(v.light);
+  const dark = parseThemeConfig(v.dark);
+  if (!light || !dark) return null;
+  return { light, dark };
 }
