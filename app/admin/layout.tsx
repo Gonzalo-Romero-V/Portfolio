@@ -26,14 +26,22 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Independent root layout: /admin does NOT share app/[locale]/layout.tsx
-    (Header/Footer/LocaleProvider/i18n dictionary) — it's a tool, not
-    public-facing content in either language. Next.js allows multiple root
-    layouts when nothing above them defines one (this project has no
-    app/layout.tsx); navigating between /admin and /es|/en does a full page
-    load instead of a client transition, which is fine since they're
-    unrelated sections. See node_modules/next/dist/docs/01-app/
-    03-api-reference/03-file-conventions/layout.md, "Root Layout". */
+/** Independent root layout: /admin does NOT go through
+    app/[locale]/layout.tsx — it's a tool, not public-facing content in
+    either language, so it skips that layout's i18n route param, generateStaticParams,
+    and Edge Config read. Next.js allows multiple root layouts when nothing
+    above them defines one (this project has no app/layout.tsx); navigating
+    between /admin and /es|/en does a full page load instead of a client
+    transition, which is fine since they're unrelated sections. See
+    node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/
+    layout.md, "Root Layout".
+
+    AdminConsole (components/admin/admin-console.tsx) still renders the real
+    Header/HomeView/Footer directly, wrapped in its own LocaleProvider, to
+    replicate the public page for previewing edits — it just does that
+    itself instead of inheriting it from app/[locale]/layout.tsx. `flex
+    flex-col` on body matches that layout's body class so the replica's
+    Footer sticks to the bottom the same way. */
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -50,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           }}
         />
       </head>
-      <body className="min-h-full">
+      <body className="min-h-full flex flex-col">
         <SiteBackground />
         {children}
       </body>
